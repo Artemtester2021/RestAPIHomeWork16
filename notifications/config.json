@@ -1,0 +1,17 @@
+{
+  "base": {
+    "project": "${JOB_NAME}",
+    "environment": "JUnit",
+    "comment": "Тестирование сайта https://reqres.in/",
+    "reportLink": "${BUILD_URL}",
+    "language": "ru",
+    "messenger": "telegram",
+    "allureFolder": "allure-report",
+    "enableChart": true
+  },
+  "telegram": {
+    "token": "7344160701:AAEWWEC-C3ujKysRcwNDOgOOsGbQ2w-xuQo",
+    "chat": "-1002416970184",
+    "replyTo": ""
+  }
+}

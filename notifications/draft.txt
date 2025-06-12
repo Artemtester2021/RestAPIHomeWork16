@@ -1,0 +1,12 @@
+7344160701:AAEWWEC-C3ujKysRcwNDOgOOsGbQ2w-xuQo
+
+https://api.telegram.org/bot7344160701:AAEWWEC-C3ujKysRcwNDOgOOsGbQ2w-xuQo/getUpdates
+
+
+-1002416970184
+
+
+curl -X POST \
+     -H 'Content-Type: application/json' \
+     -d '{"chat_id": "-1002416970184", "text": "This is a test from curl", "disable_notification": true}' \
+     https://api.telegram.org/bot7344160701:AAEWWEC-C3ujKysRcwNDOgOOsGbQ2w-xuQo/sendMessage
