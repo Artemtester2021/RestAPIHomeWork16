@@ -9,25 +9,23 @@ import static io.restassured.RestAssured.with;
 import static io.restassured.filter.log.LogDetail.BODY;
 import static io.restassured.filter.log.LogDetail.STATUS;
 import static io.restassured.http.ContentType.JSON;
+import static tests.TestBase.*;
 
-public class LoginSpec {
-    public static RequestSpecification loginRequestSpec = with()
+public class ReqresInSpec {
+    public static RequestSpecification requestSpec = with()
+            .header(FREE_API_KEY_NAME, FREE_API_KEY_VALUE)
             .filter(withCustomTemplates())
             .log().uri()
             .log().body()
             .log().headers()
-            .contentType(JSON)
-//            .baseUri("https://reqres.in")
-            .basePath("/api/login");
+            .contentType(JSON);
 
-    public static ResponseSpecification loginResponseSpec = new ResponseSpecBuilder()
-            .expectStatusCode(200)
+    public static ResponseSpecification ResponseSpec = new ResponseSpecBuilder()
             .log(STATUS)
             .log(BODY)
             .build();
 
-    public static ResponseSpecification missingPasswordResponseSpec = new ResponseSpecBuilder()
-            .expectStatusCode(400)
+    public static ResponseSpecification userDeleteResponseSpec = new ResponseSpecBuilder()
             .log(STATUS)
             .log(BODY)
             .build();

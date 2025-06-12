@@ -1,6 +1,5 @@
 package tests;
 
-import io.qameta.allure.restassured.AllureRestAssured;
 import models.lombok.DataBodyLombokModel;
 import models.lombok.DataResponseLombokModel;
 import models.pojo.DataBodyModel;
@@ -9,12 +8,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static helpers.CustomAllureListener.withCustomTemplates;
+import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
-import static java.net.HttpURLConnection.*;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static specs.ReqresInSpec.*;
 
 @Tag("restApi")
 public class RegressInTests extends TestBase {
@@ -26,34 +23,29 @@ public class RegressInTests extends TestBase {
     @Test
     @DisplayName("Запрос данных по несуществующему пользователю")
     void singleUserNotFoundTest() {
-        given()
-                .header(TestBase.FREE_API_KEY_NAME, TestBase.FREE_API_KEY_VALUE)
-                .filter(withCustomTemplates())
-                .log().uri()
+        String response = step("Запрос пользователя", () -> given(requestSpec)
                 .when()
-                .get(TestBase.USERS_END_POINT + notValidUserId)
+                .get(USERS_END_POINT + notValidUserId)
                 .then()
-                .log().status()
-                .log().body()
-                .log().headers()
-                .statusCode(HTTP_NOT_FOUND)
-                .body(is("{}"));
+                .spec(ResponseSpec)
+                .extract().asString());
+        step("Check response", () -> {
+                assertEquals("{}", response, "Тело ответа пустое");
+        });
     }
 
     @Test
     @DisplayName("Ни один ресурс не найден")
     void SingleResourceNotFound() {
-        given()
-                .header(TestBase.FREE_API_KEY_NAME, TestBase.FREE_API_KEY_VALUE)
-                .log().uri()
+        String response = step("Запрос удаления пользователя", () -> given(requestSpec)
                 .when()
-                .get(TestBase.RESOURS_END_POINT + notResourceUserId)
+                .get(RESOURS_END_POINT + notResourceUserId)
                 .then()
-                .log().status()
-                .log().body()
-                .log().headers()
-                .statusCode(HTTP_NOT_FOUND)
-                .body(is("{}"));
+                .spec(ResponseSpec)
+                .extract().asString());
+        step("Check response", () -> {
+            assertEquals("{}", response, "json пустой");
+        });
     }
 
     @Test
@@ -61,22 +53,16 @@ public class RegressInTests extends TestBase {
     void updateLombokTest() {
         DataBodyLombokModel bodyDate = new DataBodyLombokModel();
         bodyDate.setName("morpheus");
-
-        DataResponseLombokModel response = given()
-                .header(TestBase.FREE_API_KEY_NAME, TestBase.FREE_API_KEY_VALUE)
-                .body(bodyDate)
-                .contentType(JSON)
-                .log().uri()
-                .when()
-                .put(TestBase.USERS_END_POINT + validUserId)
-                .then()
-                .log().status()
-                .log().body()
-                .log().headers()
-                .statusCode(HTTP_OK)
-                .extract().as(DataResponseLombokModel.class);
-
-        assertEquals("morpheus", response.getName());
+        DataResponseLombokModel response = step("Запрос на обновление имени", () ->
+                given(requestSpec)
+                        .body(bodyDate)
+                        .when()
+                        .put(USERS_END_POINT + validUserId)
+                        .then()
+                        .spec(ResponseSpec)
+                        .extract().as(DataResponseLombokModel.class));
+        step("Check response", () ->
+                assertEquals("morpheus", response.getName()));
     }
 
     @Test
@@ -84,37 +70,29 @@ public class RegressInTests extends TestBase {
     void successfulPatchUserJobPojoTest() {
         DataBodyModel bodyDate = new DataBodyModel();
         bodyDate.setName("zion resident");
-
-        DataResponseModel response = given()
-                .header(TestBase.FREE_API_KEY_NAME, TestBase.FREE_API_KEY_VALUE)
-                .body(bodyDate)
-                .contentType(JSON)
-                .log().uri()
-                .when()
-                .patch(TestBase.USERS_END_POINT + validUserId)
-                .then()
-                .log().status()
-                .log().body()
-                .log().headers()
-                .statusCode(HTTP_OK)
-                .extract().as(DataResponseModel.class);
-
-        assertEquals("zion resident", response.getName());
+        DataResponseModel response = step("Запрос на изменение должности", () ->
+                given(requestSpec)
+                        .body(bodyDate)
+                        .when()
+                        .patch(USERS_END_POINT + validUserId)
+                        .then()
+                        .spec(ResponseSpec)
+                        .extract().as(DataResponseModel.class));
+        step("Check response", () ->
+                assertEquals("zion resident", response.getName()));
     }
 
     @Test
     @DisplayName("Удаление пользователя")
     void successfulDeleteUserTest() {
-        given()
-                .header(TestBase.FREE_API_KEY_NAME, TestBase.FREE_API_KEY_VALUE)
-                .contentType(JSON)
-                .log().uri()
+        String response = step("Запрос удаления пользователя", () -> given(requestSpec)
                 .when()
-                .delete(TestBase.USERS_END_POINT + validUserId)
+                .delete(USERS_END_POINT + validUserId)
                 .then()
-                .log().status()
-                .log().body()
-                .log().headers()
-                .statusCode(HTTP_NO_CONTENT);
+                .spec(userDeleteResponseSpec)
+                .extract().asString());
+        step("Check response", () -> {
+            assertEquals("", response, "Ответ пустой");
+        });
     }
 }
