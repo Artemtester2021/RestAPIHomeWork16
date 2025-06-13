@@ -36,7 +36,7 @@ public class RegressInTests extends TestBase {
 
     @Test
     @DisplayName("Ни один ресурс не найден")
-    void SingleResourceNotFound() {
+    void singleResourceNotFoundTest() {
         String response = step("Запрос удаления пользователя", () -> given(requestSpec)
                 .when()
                 .get(RESOURS_END_POINT + notResourceUserId)
